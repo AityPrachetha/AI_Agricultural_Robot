@@ -1,0 +1,1513 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/adept/pioneer3/protos/Pioneer3dx.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+  info [
+    "AI Autonomous Agricultural Field Testing Arena",
+    "SmartAg Research Station - Multi-Row Crop Disease Inspection & Precision Spraying"
+  ]
+  title "AI Agricultural Robot Testing Field"
+  basicTimeStep 16
+}
+
+Viewpoint {
+  orientation 0.288 0.258 -0.922 1.34
+  position -2.8 9.5 8.2
+  follow "Pioneer 3-DX"
+  followSmoothness 0.2
+}
+
+TexturedBackground {
+}
+
+TexturedBackgroundLight {
+}
+
+DirectionalLight {
+  direction 0.45 0.55 -0.70
+  intensity 2.8
+  castShadows TRUE
+}
+
+DirectionalLight {
+  direction -0.40 -0.30 -0.60
+  intensity 1.1
+  castShadows FALSE
+}
+
+# ==============================================================================
+# EXPANDED MAIN FIELD ARENA (22m x 15m)
+# ==============================================================================
+RectangleArena {
+  translation 1.0 0.6 0
+  floorSize 22 15
+  floorAppearance PBRAppearance {
+    baseColorMap ImageTexture {
+      url [
+        "../textures/soil.jpg"
+      ]
+    }
+    roughness 0.95
+    metalness 0
+  }
+  wallThickness 0.12
+  wallHeight 0.35
+  wallColor 0.28 0.16 0.08
+}
+
+# ==============================================================================
+# ROBOT (Pioneer 3-DX with 3-DOF Manipulator & Camera End-Effector)
+# ==============================================================================
+Pioneer3dx {
+  translation -2.05 0.095 0
+  rotation 0 0 1 0
+  controller "crop_robot_controller"
+  extensionSlot [
+    GPS {
+      name "gps"
+    }
+    Compass {
+      name "compass"
+    }
+    Solid {
+      translation 0.05 0 0.18
+      rotation 0 0 1 0
+      name "manipulator_base"
+      children [
+        # Base Mounting Plate
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.18 0.20 0.24
+            roughness 0.4
+            metalness 0.8
+          }
+          geometry Cylinder {
+            height 0.03
+            radius 0.07
+          }
+        }
+        # Accent Trim Ring
+        Transform {
+          translation 0 0 0.015
+          children [
+            Shape {
+              appearance PBRAppearance {
+                baseColor 0.95 0.60 0.10
+                roughness 0.3
+                metalness 0.3
+              }
+              geometry Cylinder {
+                height 0.008
+                radius 0.072
+              }
+            }
+          ]
+        }
+        # Joint 1: Base Rotation (Yaw around Z-axis)
+        HingeJoint {
+          jointParameters HingeJointParameters {
+            axis 0 0 1
+            anchor 0 0 0.03
+            minStop -3.14159
+            maxStop 3.14159
+          }
+          device [
+            RotationalMotor {
+              name "joint1_motor"
+              maxVelocity 2.5
+              maxTorque 30
+            }
+            PositionSensor {
+              name "joint1_sensor"
+            }
+          ]
+          endPoint Solid {
+            translation 0 0 0.03
+            rotation 0 0 1 0
+            name "arm_link1"
+            children [
+              # Link 1: Turret Riser Body
+              Transform {
+                translation 0 0 0.03
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.22 0.24 0.28
+                      roughness 0.5
+                      metalness 0.7
+                    }
+                    geometry Cylinder {
+                      height 0.06
+                      radius 0.05
+                    }
+                  }
+                ]
+              }
+              # Shoulder Pivot Mount Bracket
+              Transform {
+                translation 0 0 0.065
+                children [
+                  Shape {
+                    appearance PBRAppearance {
+                      baseColor 0.16 0.18 0.22
+                      roughness 0.4
+                      metalness 0.8
+                    }
+                    geometry Box {
+                      size 0.065 0.075 0.05
+                    }
+                  }
+                ]
+              }
+              # Joint 2: Shoulder Joint (Pitch around Y-axis)
+              HingeJoint {
+                jointParameters HingeJointParameters {
+                  axis 0 1 0
+                  anchor 0 0 0.07
+                  minStop -2.2
+                  maxStop 2.2
+                }
+                device [
+                  RotationalMotor {
+                    name "joint2_motor"
+                    maxVelocity 2.5
+                    maxTorque 30
+                  }
+                  PositionSensor {
+                    name "joint2_sensor"
+                  }
+                ]
+                endPoint Solid {
+                  translation 0 0 0.07
+                  rotation 0 1 0 0
+                  name "arm_link2"
+                  children [
+                    # Shoulder Hub Pivot
+                    Transform {
+                      rotation 1 0 0 1.5708
+                      children [
+                        Shape {
+                          appearance PBRAppearance {
+                            baseColor 0.95 0.55 0.10
+                            roughness 0.3
+                            metalness 0.3
+                          }
+                          geometry Cylinder {
+                            height 0.08
+                            radius 0.032
+                          }
+                        }
+                      ]
+                    }
+                    # Link 2: Upper Arm Boom
+                    Transform {
+                      translation 0 0 0.10
+                      children [
+                        Shape {
+                          appearance PBRAppearance {
+                            baseColor 0.88 0.50 0.08
+                            roughness 0.4
+                            metalness 0.3
+                          }
+                          geometry Cylinder {
+                            height 0.18
+                            radius 0.026
+                          }
+                        }
+                      ]
+                    }
+                    # Joint 3: Elbow Joint (Pitch around Y-axis)
+                    HingeJoint {
+                      jointParameters HingeJointParameters {
+                        axis 0 1 0
+                        anchor 0 0 0.20
+                        minStop -2.5
+                        maxStop 2.5
+                      }
+                      device [
+                        RotationalMotor {
+                          name "joint3_motor"
+                          maxVelocity 2.5
+                          maxTorque 30
+                        }
+                        PositionSensor {
+                          name "joint3_sensor"
+                        }
+                      ]
+                      endPoint Solid {
+                        translation 0 0 0.20
+                        rotation 0 1 0 0
+                        name "arm_link3_end_effector"
+                        children [
+                          # Elbow Pivot Hub
+                          Transform {
+                            rotation 1 0 0 1.5708
+                            children [
+                              Shape {
+                                appearance PBRAppearance {
+                                  baseColor 0.22 0.24 0.28
+                                  roughness 0.4
+                                  metalness 0.7
+                                }
+                                geometry Cylinder {
+                                  height 0.065
+                                  radius 0.028
+                                }
+                              }
+                            ]
+                          }
+                          # Link 3: Forearm Boom
+                          Transform {
+                            translation 0 0 0.07
+                            children [
+                              Shape {
+                                appearance PBRAppearance {
+                                  baseColor 0.88 0.50 0.08
+                                  roughness 0.4
+                                  metalness 0.3
+                                }
+                                geometry Cylinder {
+                                  height 0.12
+                                  radius 0.020
+                                }
+                              }
+                            ]
+                          }
+                          # End-Effector Tool Head / Camera Housing
+                          Transform {
+                            translation 0 0 0.14
+                            children [
+                              Shape {
+                                appearance PBRAppearance {
+                                  baseColor 0.12 0.14 0.16
+                                  roughness 0.3
+                                  metalness 0.9
+                                }
+                                geometry Box {
+                                  size 0.045 0.055 0.035
+                                }
+                              }
+                            ]
+                          }
+                          # Camera Optical Lens Bezel
+                          Transform {
+                            translation 0 0 0.16
+                            children [
+                              Shape {
+                                appearance PBRAppearance {
+                                  baseColor 0.05 0.05 0.05
+                                  roughness 0.2
+                                  metalness 0.95
+                                }
+                                geometry Cylinder {
+                                  height 0.015
+                                  radius 0.018
+                                }
+                              }
+                            ]
+                          }
+                          # CAMERA (END-EFFECTOR SENSOR)
+                          Camera {
+                            translation 0 0 0.185
+                            rotation 0 0 1 0
+                            name "camera"
+                            fieldOfView 0.9
+                            width 128
+                            height 128
+                          }
+                        ]
+                        boundingObject Transform {
+                          translation 0 0 0.07
+                          children [
+                            Box {
+                              size 0.055 0.065 0.16
+                            }
+                          ]
+                        }
+                        physics Physics {
+                          mass 0.18
+                          centerOfMass [ 0 0 0.07 ]
+                        }
+                      }
+                    }
+                  ]
+                  boundingObject Transform {
+                    translation 0 0 0.10
+                    children [
+                      Box {
+                        size 0.065 0.075 0.20
+                      }
+                    ]
+                  }
+                  physics Physics {
+                    mass 0.30
+                    centerOfMass [ 0 0 0.10 ]
+                  }
+                }
+              }
+            ]
+            boundingObject Transform {
+              translation 0 0 0.04
+              children [
+                Cylinder {
+                  height 0.08
+                  radius 0.05
+                }
+              ]
+            }
+            physics Physics {
+              mass 0.35
+              centerOfMass [ 0 0 0.04 ]
+            }
+          }
+        }
+      ]
+      boundingObject Transform {
+        translation 0 0 0.015
+        children [
+          Cylinder {
+            height 0.03
+            radius 0.07
+          }
+        ]
+      }
+      physics Physics {
+        mass 0.40
+        centerOfMass [ 0 0 0.015 ]
+      }
+    }
+  ]
+}
+
+# ==============================================================================
+# START & FINISH DOCKING PADS
+# ==============================================================================
+# Start Pad (Row 1 Origin)
+Solid {
+  translation -2.05 0.095 0.002
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.18 0.42 0.22
+        roughness 0.7
+        metalness 0.1
+      }
+      geometry Box {
+        size 0.7 0.65 0.004
+      }
+    }
+    Transform {
+      translation 0 0 0.002
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.95 0.85 0.15
+            roughness 0.5
+          }
+          geometry Box {
+            size 0.5 0.06 0.002
+          }
+        }
+      ]
+    }
+  ]
+  name "Start Docking Bay"
+}
+
+# Finish / Return Bay (Row 2 End)
+Solid {
+  translation -1.6 1.14 0.002
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.15 0.32 0.55
+        roughness 0.7
+        metalness 0.1
+      }
+      geometry Box {
+        size 0.7 0.65 0.004
+      }
+    }
+    Transform {
+      translation 0 0 0.002
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.92 0.92 0.95
+            roughness 0.5
+          }
+          geometry Box {
+            size 0.5 0.06 0.002
+          }
+        }
+      ]
+    }
+  ]
+  name "Finish Return Bay"
+}
+
+# ==============================================================================
+# RESEARCH PLOT MARKER SIGNS
+# ==============================================================================
+Solid {
+  translation -2.1 0.095 0.35
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.4 0.25 0.12
+        roughness 0.8
+      }
+      geometry Cylinder {
+        height 0.7
+        radius 0.03
+      }
+    }
+    Transform {
+      translation 0 0 0.3
+      rotation 0 0 1 1.5708
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.12 0.45 0.22
+            roughness 0.4
+          }
+          geometry Box {
+            size 0.03 0.45 0.2
+          }
+        }
+      ]
+    }
+  ]
+  name "Start Marker Post"
+}
+
+Solid {
+  translation -2.1 1.14 0.35
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.4 0.25 0.12
+        roughness 0.8
+      }
+      geometry Cylinder {
+        height 0.7
+        radius 0.03
+      }
+    }
+    Transform {
+      translation 0 0 0.3
+      rotation 0 0 1 1.5708
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0.12 0.32 0.62
+            roughness 0.4
+          }
+          geometry Box {
+            size 0.03 0.45 0.2
+          }
+        }
+      ]
+    }
+  ]
+  name "Finish Marker Post"
+}
+
+# ==============================================================================
+# RAISED CROPLAND BED FURROWS
+# ==============================================================================
+# Bed 1 (South Buffer Row: Y = -2.6)
+Solid {
+  translation 1.5 -2.6 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.32 0.19 0.11
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed South Buffer"
+}
+
+# Bed 2 (South Outer Row: Y = -1.6)
+Solid {
+  translation 1.5 -1.6 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.32 0.19 0.11
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed South Outer"
+}
+
+# Bed 3 (Active Test Bed 1: Y = -0.5)
+Solid {
+  translation 1.5 -0.5 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.29 0.17 0.09
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed Row 1"
+}
+
+# Bed 4 (Active Test Bed 2: Y = 0.7)
+Solid {
+  translation 1.5 0.7 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.29 0.17 0.09
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed Row 2"
+}
+
+# Bed 5 (North Outer Row A: Y = 1.9)
+Solid {
+  translation 1.5 1.9 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.32 0.19 0.11
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed North Outer A"
+}
+
+# Bed 6 (North Outer Row B: Y = 2.9)
+Solid {
+  translation 1.5 2.9 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.32 0.19 0.11
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed North Outer B"
+}
+
+# Bed 7 (North Buffer Row: Y = 3.9)
+Solid {
+  translation 1.5 3.9 0.012
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.32 0.19 0.11
+        roughness 0.9
+      }
+      geometry Box {
+        size 8.5 0.5 0.024
+      }
+    }
+  ]
+  name "Crop Bed North Buffer"
+}
+
+# ==============================================================================
+# IRRIGATION DRIP LINES
+# ==============================================================================
+Solid {
+  translation 1.5 -0.68 0.01
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.1 0.1 0.1
+        roughness 0.6
+      }
+      geometry Box {
+        size 8.5 0.03 0.02
+      }
+    }
+  ]
+  name "Irrigation Line Row 1"
+}
+
+Solid {
+  translation 1.5 0.88 0.01
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.1 0.1 0.1
+        roughness 0.6
+      }
+      geometry Box {
+        size 8.5 0.03 0.02
+      }
+    }
+  ]
+  name "Irrigation Line Row 2"
+}
+
+# ==============================================================================
+# ACTIVE FIRST ROW LEAF INSPECTION PANELS (Plants 1 - 6)
+# ==============================================================================
+
+# Plant 1: Healthy
+Solid {
+  translation -0.35 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_1_healthy.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Healthy Leaf Panel"
+}
+
+# Plant 2: Early Blight
+Solid {
+  translation 0.3 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_2_early_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Early Blight Leaf Panel"
+}
+
+# Plant 3: Late Blight
+Solid {
+  translation 0.95 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_3_late_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Late Blight Leaf Panel"
+}
+
+# Plant 4: Healthy
+Solid {
+  translation 1.55 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_4_healthy.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Healthy Leaf Panel 2"
+}
+
+# Plant 5: Early Blight
+Solid {
+  translation 2.15 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_5_early_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Early Blight Leaf Panel 2"
+}
+
+# Plant 6: Late Blight
+Solid {
+  translation 2.7 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_6_late_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Late Blight Leaf Panel 2"
+}
+
+# ==============================================================================
+# ACTIVE SECOND ROW LEAF INSPECTION PANELS (Plants 7 - 12)
+# ==============================================================================
+
+# Plant 7: Healthy
+Solid {
+  translation 2.1 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_7_healthy.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Healthy Leaf Panel 7"
+}
+
+# Plant 8: Early Blight
+Solid {
+  translation 1.5 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_8_early_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Early Blight Leaf Panel 8"
+}
+
+# Plant 9: Late Blight
+Solid {
+  translation 1 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_9_late_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Late Blight Leaf Panel 9"
+}
+
+# Plant 10: Healthy
+Solid {
+  translation 0.4 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_10_healthy.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Healthy Leaf Panel 10"
+}
+
+# Plant 11: Early Blight
+Solid {
+  translation -0.35 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_11_early_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Early Blight Leaf Panel 11"
+}
+
+# Plant 12: Late Blight
+Solid {
+  translation -0.9 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColorMap ImageTexture {
+          url [
+            "../textures/plant_12_late_blight.jpg"
+          ]
+        }
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.4 0.4 0.01
+      }
+    }
+  ]
+  name "Late Blight Leaf Panel 12"
+}
+
+# ==============================================================================
+# ADDITIONAL EXTENSION LEAF INSPECTION PANELS (Bed Extensions & Outer Rows)
+# ==============================================================================
+
+# Row 1 Bed Extensions (East & West)
+Solid {
+  translation -1.0 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_10_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 1 Ext West 1"
+}
+Solid {
+  translation -1.6 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_11_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 1 Ext West 2"
+}
+Solid {
+  translation 3.3 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_12_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 1 Ext East 1"
+}
+Solid {
+  translation 3.9 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_1_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 1 Ext East 2"
+}
+Solid {
+  translation 4.5 -0.5 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_2_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 1 Ext East 3"
+}
+
+# Row 2 Bed Extensions (East & West)
+Solid {
+  translation -1.5 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_4_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 2 Ext West 1"
+}
+Solid {
+  translation -2.1 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_5_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 2 Ext West 2"
+}
+Solid {
+  translation 2.7 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_6_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 2 Ext East 1"
+}
+Solid {
+  translation 3.3 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_7_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 2 Ext East 2"
+}
+Solid {
+  translation 3.9 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_8_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 2 Ext East 3"
+}
+Solid {
+  translation 4.5 0.7 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_9_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "Row 2 Ext East 4"
+}
+
+# South Outer Row A (Y = -1.6) Leaf Inspection Panels
+Solid {
+  translation -2.0 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_1_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 1"
+}
+Solid {
+  translation -1.2 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_2_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 2"
+}
+Solid {
+  translation -0.4 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_3_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 3"
+}
+Solid {
+  translation 0.4 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_4_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 4"
+}
+Solid {
+  translation 1.2 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_5_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 5"
+}
+Solid {
+  translation 2.0 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_6_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 6"
+}
+Solid {
+  translation 2.8 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_7_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 7"
+}
+Solid {
+  translation 3.6 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_8_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 8"
+}
+Solid {
+  translation 4.4 -1.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_9_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South A Panel 9"
+}
+
+# South Buffer Row B (Y = -2.6) Leaf Inspection Panels
+Solid {
+  translation -1.8 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_10_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 1"
+}
+Solid {
+  translation -1.0 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_11_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 2"
+}
+Solid {
+  translation -0.2 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_12_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 3"
+}
+Solid {
+  translation 0.6 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_1_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 4"
+}
+Solid {
+  translation 1.4 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_2_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 5"
+}
+Solid {
+  translation 2.2 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_3_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 6"
+}
+Solid {
+  translation 3.0 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_4_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 7"
+}
+Solid {
+  translation 3.8 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_5_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 8"
+}
+Solid {
+  translation 4.6 -2.6 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_6_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "South B Panel 9"
+}
+
+# North Outer Row A (Y = 1.9) Leaf Inspection Panels
+Solid {
+  translation -2.0 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_7_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 1"
+}
+Solid {
+  translation -1.2 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_8_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 2"
+}
+Solid {
+  translation -0.4 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_9_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 3"
+}
+Solid {
+  translation 0.4 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_10_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 4"
+}
+Solid {
+  translation 1.2 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_11_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 5"
+}
+Solid {
+  translation 2.0 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_12_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 6"
+}
+Solid {
+  translation 2.8 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_1_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 7"
+}
+Solid {
+  translation 3.6 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_2_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 8"
+}
+Solid {
+  translation 4.4 1.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_3_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North A Panel 9"
+}
+
+# North Outer Row B (Y = 2.9) Leaf Inspection Panels
+Solid {
+  translation -1.8 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_4_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 1"
+}
+Solid {
+  translation -1.0 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_5_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 2"
+}
+Solid {
+  translation -0.2 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_6_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 3"
+}
+Solid {
+  translation 0.6 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_7_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 4"
+}
+Solid {
+  translation 1.4 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_8_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 5"
+}
+Solid {
+  translation 2.2 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_9_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 6"
+}
+Solid {
+  translation 3.0 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_10_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 7"
+}
+Solid {
+  translation 3.8 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_11_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 8"
+}
+Solid {
+  translation 4.6 2.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_12_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North B Panel 9"
+}
+
+# North Buffer Row (Y = 3.9) Leaf Inspection Panels
+Solid {
+  translation -1.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_1_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 1"
+}
+Solid {
+  translation -0.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_2_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 2"
+}
+Solid {
+  translation 0.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_3_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 3"
+}
+Solid {
+  translation 1.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_4_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 4"
+}
+Solid {
+  translation 2.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_5_early_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 5"
+}
+Solid {
+  translation 3.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_6_late_blight.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 6"
+}
+Solid {
+  translation 4.5 3.9 0.35
+  rotation 0.5773489358556708 0.5773509358554485 -0.5773509358554485 2.0944
+  children [ Shape { appearance PBRAppearance { baseColorMap ImageTexture { url [ "../textures/plant_7_healthy.jpg" ] } roughness 1 metalness 0 } geometry Box { size 0.4 0.4 0.01 } } ]
+  name "North C Panel 7"
+}
+
+# ==============================================================================
+# PERIMETER WOODEN AGRICULTURAL FENCING
+# ==============================================================================
+
+# South Fence (along Y = -5.5)
+Solid {
+  translation 1.0 -5.5 0.35
+  children [
+    Transform {
+      translation 0 0 0.2
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 18.0 0.04 0.08 } } ]
+    }
+    Transform {
+      translation 0 0 -0.1
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 18.0 0.04 0.08 } } ]
+    }
+    Transform { translation -8.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation -5.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation -2.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 1.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 4.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 7.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+  ]
+  boundingObject Box { size 18.0 0.1 0.7 }
+  name "South Boundary Fence"
+}
+
+# North Fence (along Y = 6.2)
+Solid {
+  translation 1.0 6.2 0.35
+  children [
+    Transform {
+      translation 0 0 0.2
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 18.0 0.04 0.08 } } ]
+    }
+    Transform {
+      translation 0 0 -0.1
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 18.0 0.04 0.08 } } ]
+    }
+    Transform { translation -8.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation -5.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation -2.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 1.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 4.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 7.0 0 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+  ]
+  boundingObject Box { size 18.0 0.1 0.7 }
+  name "North Boundary Fence"
+}
+
+# West Fence (along X = -8.5)
+Solid {
+  translation -8.5 0.35 0.35
+  children [
+    Transform {
+      translation 0 0 0.2
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 0.04 11.5 0.08 } } ]
+    }
+    Transform {
+      translation 0 0 -0.1
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 0.04 11.5 0.08 } } ]
+    }
+    Transform { translation 0 -4.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 0 -1.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 0 1.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 0 4.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+  ]
+  boundingObject Box { size 0.1 11.5 0.7 }
+  name "West Boundary Fence"
+}
+
+# East Fence (along X = 10.0)
+Solid {
+  translation 10.0 0.35 0.35
+  children [
+    Transform {
+      translation 0 0 0.2
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 0.04 11.5 0.08 } } ]
+    }
+    Transform {
+      translation 0 0 -0.1
+      children [ Shape { appearance PBRAppearance { baseColor 0.42 0.26 0.14 roughness 0.8 } geometry Box { size 0.04 11.5 0.08 } } ]
+    }
+    Transform { translation 0 -4.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 0 -1.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 0 1.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+    Transform { translation 0 4.5 0 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.85 } geometry Cylinder { height 0.7 radius 0.05 } } ] }
+  ]
+  boundingObject Box { size 0.1 11.5 0.7 }
+  name "East Boundary Fence"
+}
+
+# ==============================================================================
+# AGRICULTURAL RESEARCH INFRASTRUCTURE
+# ==============================================================================
+
+# Solar-Powered IoT Weather & Telemetry Station
+Solid {
+  translation -6.0 4.8 0
+  children [
+    Transform {
+      translation 0 0 0.02
+      children [ Shape { appearance PBRAppearance { baseColor 0.5 0.5 0.5 roughness 0.7 } geometry Box { size 0.8 0.8 0.04 } } ]
+    }
+    Transform {
+      translation 0 0 1.25
+      children [ Shape { appearance PBRAppearance { baseColor 0.8 0.8 0.82 metalness 0.7 roughness 0.3 } geometry Cylinder { height 2.5 radius 0.04 } } ]
+    }
+    Transform {
+      translation 0.08 0 1.1
+      children [ Shape { appearance PBRAppearance { baseColor 0.9 0.9 0.92 roughness 0.4 } geometry Box { size 0.2 0.3 0.35 } } ]
+    }
+    Transform {
+      translation 0 0 2.2
+      rotation 0.577 0.577 -0.577 1.2
+      children [ Shape { appearance PBRAppearance { baseColor 0.08 0.12 0.28 roughness 0.2 metalness 0.8 } geometry Box { size 0.5 0.4 0.02 } } ]
+    }
+    Transform {
+      translation 0 0 2.45
+      children [ Shape { appearance PBRAppearance { baseColor 0.95 0.95 0.95 roughness 0.3 } geometry Box { size 0.4 0.04 0.04 } } ]
+    }
+  ]
+  boundingObject Box { size 0.8 0.8 2.5 }
+  name "IoT Environmental Weather Station"
+}
+
+# Irrigation Hub & Water Reservoir
+Solid {
+  translation 7.5 -3.8 0
+  children [
+    Transform {
+      translation 0 0 0.04
+      children [ Shape { appearance PBRAppearance { baseColor 0.55 0.55 0.58 roughness 0.6 } geometry Box { size 1.6 1.6 0.08 } } ]
+    }
+    Transform {
+      translation 0 0 0.75
+      children [ Shape { appearance PBRAppearance { baseColor 0.18 0.45 0.65 roughness 0.4 metalness 0.1 } geometry Cylinder { height 1.35 radius 0.55 } } ]
+    }
+    Transform {
+      translation -0.65 0 0.35
+      children [ Shape { appearance PBRAppearance { baseColor 0.85 0.3 0.15 roughness 0.5 } geometry Box { size 0.25 0.5 0.6 } } ]
+    }
+  ]
+  boundingObject Box { size 1.6 1.6 1.5 }
+  name "Field Irrigation Station"
+}
+
+# Agricultural Field Research Shelter
+Solid {
+  translation -6.5 -3.8 0
+  children [
+    Transform {
+      translation 0 0 0.03
+      children [ Shape { appearance PBRAppearance { baseColor 0.52 0.52 0.52 roughness 0.6 } geometry Box { size 2.2 2.2 0.06 } } ]
+    }
+    Transform { translation -0.9 -0.9 0.9 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.8 } geometry Cylinder { height 1.8 radius 0.06 } } ] }
+    Transform { translation 0.9 -0.9 0.9 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.8 } geometry Cylinder { height 1.8 radius 0.06 } } ] }
+    Transform { translation -0.9 0.9 0.9 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.8 } geometry Cylinder { height 1.8 radius 0.06 } } ] }
+    Transform { translation 0.9 0.9 0.9 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.8 } geometry Cylinder { height 1.8 radius 0.06 } } ] }
+    Transform {
+      translation 0 0 1.85
+      children [ Shape { appearance PBRAppearance { baseColor 0.22 0.35 0.22 roughness 0.5 } geometry Box { size 2.4 2.4 0.08 } } ]
+    }
+    Transform {
+      translation 0 0 0.3
+      children [ Shape { appearance PBRAppearance { baseColor 0.55 0.38 0.20 roughness 0.8 } geometry Box { size 0.7 0.7 0.5 } } ]
+    }
+  ]
+  boundingObject Box { size 2.4 2.4 2.0 }
+  name "Field Equipment Station"
+}
+
+# ==============================================================================
+# PERIMETER WINDBREAK TREES
+# ==============================================================================
+Solid {
+  translation -4.0 5.4 0
+  children [
+    Transform { translation 0 0 0.6 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.9 } geometry Cylinder { height 1.2 radius 0.1 } } ] }
+    Transform { translation 0 0 1.6 children [ Shape { appearance PBRAppearance { baseColor 0.14 0.38 0.12 roughness 0.8 } geometry Sphere { radius 0.75 } } ] }
+  ]
+  boundingObject Cylinder { height 2.2 radius 0.6 }
+  name "Perimeter Tree North 1"
+}
+Solid {
+  translation 3.0 5.4 0
+  children [
+    Transform { translation 0 0 0.6 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.9 } geometry Cylinder { height 1.2 radius 0.1 } } ] }
+    Transform { translation 0 0 1.6 children [ Shape { appearance PBRAppearance { baseColor 0.16 0.42 0.14 roughness 0.8 } geometry Sphere { radius 0.8 } } ] }
+  ]
+  boundingObject Cylinder { height 2.2 radius 0.6 }
+  name "Perimeter Tree North 2"
+}
+Solid {
+  translation -3.5 -4.8 0
+  children [
+    Transform { translation 0 0 0.6 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.9 } geometry Cylinder { height 1.2 radius 0.1 } } ] }
+    Transform { translation 0 0 1.6 children [ Shape { appearance PBRAppearance { baseColor 0.15 0.40 0.13 roughness 0.8 } geometry Sphere { radius 0.75 } } ] }
+  ]
+  boundingObject Cylinder { height 2.2 radius 0.6 }
+  name "Perimeter Tree South 1"
+}
+Solid {
+  translation 3.5 -4.8 0
+  children [
+    Transform { translation 0 0 0.6 children [ Shape { appearance PBRAppearance { baseColor 0.38 0.24 0.12 roughness 0.9 } geometry Cylinder { height 1.2 radius 0.1 } } ] }
+    Transform { translation 0 0 1.6 children [ Shape { appearance PBRAppearance { baseColor 0.17 0.44 0.15 roughness 0.8 } geometry Sphere { radius 0.8 } } ] }
+  ]
+  boundingObject Cylinder { height 2.2 radius 0.6 }
+  name "Perimeter Tree South 2"
+}

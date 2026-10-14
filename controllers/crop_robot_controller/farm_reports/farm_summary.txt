@@ -1,0 +1,13 @@
+========================================
+FARM INSPECTION REPORT - FULL FIELD
+========================================
+Total Leaves Inspected : 66 / 66
+Healthy Leaves         : 23
+Diseased Leaves        : 43
+Precision Sprays Active: 43
+Average Confidence     : 99.13%
+----------------------------------------
+Dashboard        : /Users/aityprachetha/Desktop/AI_Agricultural_Robot_Clean/controllers/crop_robot_controller/farm_reports/farm_dashboard.png
+Confidence graph : /Users/aityprachetha/Desktop/AI_Agricultural_Robot_Clean/controllers/crop_robot_controller/farm_reports/confidence_graph.png
+Results CSV      : /Users/aityprachetha/Desktop/AI_Agricultural_Robot_Clean/controllers/crop_robot_controller/farm_reports/farm_results.csv
+========================================

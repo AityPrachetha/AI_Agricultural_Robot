@@ -1,0 +1,90 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/adept/pioneer3/protos/Pioneer3dx.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.15673701546549693 0.25694949853098464 -0.9536301501041398 1.138113217421676
+  position -2.8940027493328624 7.2389906148662755 3.927913365431068
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation 0 0.15 0
+  floorSize 3 3
+}
+Pioneer3dx {
+  hidden position_0_0 4.300751493432012e-06
+  hidden position_0_1 476.6718026200029
+  hidden position_0_2 476.6717969666368
+  hidden rotation_1 0.5773519245496962 -0.5773494415078839 -0.5773494415077377 2.094392516961747
+  hidden position_1_0 -268.149637776137
+  hidden rotation_2 -0.9999999999999999 0 0 4.25585487459438
+  hidden rotation_4 0.683282530968505 -0.6832825561458477 -0.25739062014780284 2.637747840773646
+  hidden rotation_9 0.6832829188479932 -0.683282944025483 -0.2573885607684144 2.6377517036211735
+  translation -1 0.095 0
+  rotation -0.0019652659783637003 -0.999996026018715 -0.002021305620544965 0.04977707111787989
+  controller "crop_robot_controller"
+  extensionSlot [
+    Camera {
+      translation 0 0.3 0.22
+      rotation -0.631471993349337 0.6053579936243696 0.4845459948967616 -1.8057053071795863
+      fieldOfView 0.9
+      width 128
+      height 128
+    }
+  ]
+}
+Solid {
+  translation -0.4 -0.075 0.35
+  rotation 0 1 0 0
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0.8 0
+      }
+      geometry Cylinder {
+        height 0.15
+        radius 0.05
+      }
+    }
+  ]
+}
+Solid {
+  translation 0.2 -0.075 0.35
+  rotation 0 1 0 0
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0.8 0
+      }
+      geometry Cylinder {
+        height 0.15
+        radius 0.05
+      }
+    }
+  ]
+  name "solid(1)"
+}
+Solid {
+  translation 0.8 -0.075 0.35
+  rotation 0 1 0 0
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0 0.8 0
+      }
+      geometry Cylinder {
+        height 0.15
+        radius 0.05
+      }
+    }
+  ]
+  name "solid(2)"
+}
